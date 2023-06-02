@@ -52,7 +52,7 @@ namespace PDNThumbReg
         /// The <see cref="Assembly"/> to register <see cref="Type"/>s for COM.
         /// </param>
         /// <param name="flags">
-        /// <inheritdoc cref="RegistrationServices.RegisterAssembly" path="/param[@name='AssemblyRegistrationFlags']"/>
+        /// <inheritdoc cref="RegistrationServices.RegisterAssembly" path="/param[@name='flags']"/>
         /// </param>
         /// <returns>
         /// <see langword="true"/> if successfully registered, else <see langword="false"/>.
@@ -94,9 +94,6 @@ namespace PDNThumbReg
         /// </summary>
         /// <param name="assembly">
         /// The <see cref="Assembly"/> to unregister <see cref="Type"/>s from COM.
-        /// </param>
-        /// <param name="flags">
-        /// <inheritdoc cref="RegistrationServices.RegisterAssembly" path="/param[@name='AssemblyRegistrationFlags']"/>
         /// </param>
         /// <returns>
         /// <see langword="true"/> if successfully unregistered, else <see langword="false"/>.

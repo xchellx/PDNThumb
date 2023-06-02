@@ -19,14 +19,14 @@ Open PDNThumb.sln in Visual Studio 2022 (unsure if older versions of VS will wor
 To create a release: Batch build the `x86` and `x64` configurations in `Release` then run `PDNThumb_Release.bat` as
 administrator in the `PDNThumb_Release` folder. The release script assumes you have Windows 10 build 17063 and later
 because it includes tar. If you need tar on older Windows, you can find it at
-[libarchive/libarchive/releases](libarchive/libarchive/releases). It requires administrator rights because it uses the
-`/O /X` arguments for `XCOPY` which require administrator rights to use (or else it gives `Access Denied`). If you feel
-these extra file attributes are not worthy to copy over for a release, you can omit these from the `%XCOPY2%` variable
-in the build script and not have to run the script as administrator.
+[libarchive/libarchive/releases](https://github.com/libarchive/libarchive/releases). It requires administrator rights
+because it uses the `/O /X` arguments for `XCOPY` which require administrator rights to use (or else it gives
+`Access Denied`). If you feel these extra file attributes are not worthy to copy over for a release, you can omit these
+from the `%XCOPY2%` variable in the build script and not have to run the script as administrator.
 
 This project depends on SharpShell. There is already a build of it's DLL from the latest commit (as the nuget package
 is out of date) here. I simply retargeted it all to .NET Framework 4.8. You can build your own release from
-[dwmkerr/sharpshell](dwmkerr/sharpshell). Open in VS2022, change the target of all C# projects to .NET Framework 4.8
+[dwmkerr/sharpshell](https://github.com/dwmkerr/sharpshell). Open in VS2022, change the target of all C# projects to .NET Framework 4.8
 then build with PowerShell using the `build.ps1` script to ensure the native x86 and x64 assemblies are included in
 `SharpShell.dll` (because VS2022 does not).
 
@@ -36,10 +36,10 @@ thumbnail handler invokes.
 ## Installing
 To install `PDNThumb`:
 
-1. Place `PDNThumbReg32.exe` and `PDNThumbReg64.exe` at a place where you want them to be installed (once Windows has a
-handle on them they wont be deletable unless you uninstall).
+1. Place `PDNThumbReg.exe` alongside it's depencies (as seen in the release script/zip) at a place where you want
+`PDNThumb` to be installed (once Windows has a handle on them it wont be deletable unless you uninstall).
 
-2. Run `PDNThumbReg32.exe` and `PDNThumbReg64.exe`.
+2. Run `PDNThumbReg.exe`.
 
 3. If no error occurs and you see a success message, then either:
 
@@ -63,7 +63,7 @@ is no usage in that.
 ```
 
 ## Credits
-- [Paint.NET by Rick Brewster](http://getpaint.net/)
+- [Paint.NET by Rick Brewster](https://getpaint.net/)
 - [SharpShell by Dave Kerr and contributors](https://github.com/dwmkerr/sharpshell)
 
 ## License
