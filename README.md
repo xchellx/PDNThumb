@@ -30,6 +30,9 @@ is out of date) here. I simply retargeted it all to .NET Framework 4.8. You can 
 then build with PowerShell using the `build.ps1` script to ensure the native x86 and x64 assemblies are included in
 `SharpShell.dll` (because VS2022 does not).
 
+The purpose of `PDNThumbTester` is to test the functionality of reading the thumbnail, which essentially is what the
+thumbnail handler invokes.
+
 ## Installing
 Run `PDNThumbReg32.exe` and `PDNThumbReg64.exe`. If no error occurrsed and you see a success message, then restart your
 computer ***or*** right click `Windows Explorer` in `Task Manager` then click `Restart`. You can uninstall by repeating
