@@ -34,9 +34,20 @@ The purpose of `PDNThumbTester` is to test the functionality of reading the thum
 thumbnail handler invokes.
 
 ## Installing
-Run `PDNThumbReg32.exe` and `PDNThumbReg64.exe`. If no error occurrsed and you see a success message, then restart your
-computer ***or*** right click `Windows Explorer` in `Task Manager` then click `Restart`. You can uninstall by repeating
-this process.
+To install `PDNThumb`:
+
+1. Place `PDNThumbReg32.exe` and `PDNThumbReg64.exe` at a place where you want them to be installed (once Windows has a
+handle on them they wont be deletable unless you uninstall).
+
+2. Run `PDNThumbReg32.exe` and `PDNThumbReg64.exe`.
+
+3. If no error occurs and you see a success message, then either:
+
+    a. restart your computer.
+
+    b. ***or*** right click `Windows Explorer` in `Task Manager` then click `Restart`.
+
+You can uninstall `PDNThumb` by repeating this process.
 
 `PDNThumbReg` supports command line arguments:
 ```
