@@ -24,12 +24,6 @@ because it uses the `/O /X` arguments for `XCOPY` which require administrator ri
 `Access Denied`). If you feel these extra file attributes are not worthy to copy over for a release, you can omit these
 from the `%XCOPY2%` variable in the build script and not have to run the script as administrator.
 
-This project depends on SharpShell. There is already a build of it's DLL from the latest commit (as the nuget package
-is out of date) here. I simply retargeted it all to .NET Framework 4.8. You can build your own release from
-[dwmkerr/sharpshell](https://github.com/dwmkerr/sharpshell). Open in VS2022, change the target of all C# projects to .NET Framework 4.8
-then build with PowerShell using the `build.ps1` script to ensure the native x86 and x64 assemblies are included in
-`SharpShell.dll` (because VS2022 does not).
-
 The purpose of `PDNThumbTester` is to test the functionality of reading the thumbnail, which essentially is what the
 thumbnail handler invokes.
 
@@ -64,7 +58,7 @@ is no usage in that.
 
 ## Credits
 - [Paint.NET by Rick Brewster](https://getpaint.net/)
-- [SharpShell by Dave Kerr and contributors](https://github.com/dwmkerr/sharpshell)
+- [Microsoft-WindowsAPICodePack-ShellExtensions by Microsoft and contributors](https://github.com/wferris722/Windows-API-Code-Pack-1.1)
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)

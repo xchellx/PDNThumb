@@ -398,7 +398,5 @@ FodyWeavers.xsd
 *.sln.iml
 
 # Release files
-PDNThumb_Release/PDNThumb_Release64/
-PDNThumb_Release/PDNThumb_Release32/
-PDNThumb_Release/PDNThumb_Release64.zip
-PDNThumb_Release/PDNThumb_Release32.zip
+PDNThumb_Release/PDNThumb_Release/
+PDNThumb_Release/PDNThumb_Release.zip
