@@ -110,7 +110,7 @@ namespace PDNThumbReg
                                 if (shellKey != null)
                                 {
                                     object shellValue = shellKey.GetValue(regGuid);
-                                    if (shellValue == null && shellValue is string shellValueStr)
+                                    if (shellValue != null && shellValue is string shellValueStr)
                                         isRegistered = shellValueStr == regAttr.Name;
                                 }
                             }
