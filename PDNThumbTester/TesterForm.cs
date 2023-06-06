@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+using PDNThumb.IO;
 using PDNThumbTester.Properties;
 using System;
 using System.Drawing;
@@ -51,8 +52,8 @@ namespace PDNThumbTester
                 using (MemoryStream testStream = new MemoryStream(Resources_test))
                 {
                     return (width == 0)
-                        ? PDNThumb.ThumbnailHandler.ReadPDNThumb(testStream)
-                        : PDNThumb.ThumbnailHandler.ReadPDNThumbRes(testStream, width);
+                        ? PDNReader.ReadPDN3Thumb(testStream)
+                        : PDNReader.ReadPDN3ThumbRes(testStream, width);
                 }
             });
             await Result(preview.BeginInvoke(Invoker(() => preview.Image = previewBmp)));

@@ -22,6 +22,10 @@
  * SOFTWARE.
  */
 
+using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.ShellExtensions;
+using PDNThumb;
+using PDNThumbReg.Utils;
 using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -33,7 +37,8 @@ namespace PDNThumbReg
         private const string cliName = "PDNThumbReg";
         private const string regName = "Paint.NET Project File Thumbnail Provider";
         private const string regAssemblyName = "PDNThumb.dll";
-        private static readonly Assembly regAssembly = typeof(PDNThumb.ThumbnailHandler).Assembly;
+        private static readonly Assembly regAssembly = typeof(ThumbnailHandler).Assembly;
+        private static readonly RegistrationServices regSvc = new RegistrationServices();
 
         public static int Main(string[] args)
         {
@@ -52,11 +57,11 @@ namespace PDNThumbReg
                     if (!silent && c == 'h')
                         help = true;
                     if (!silent && c == 's')
-                        silent = true;
+                        silent = assumeYes = true;
                     if (!assumeYes && c == 'y')
                         assumeYes = true;
 
-                    if (forceIsRegistered != null)
+                    if (forceIsRegistered == null)
                     {
                         if (c == 'i')
                             forceIsRegistered = false;
@@ -84,12 +89,33 @@ namespace PDNThumbReg
                 return 1;
             }
 
-            bool isRegistered;
+            bool isRegistered = false;
             if (forceIsRegistered == null)
             {
                 try
                 {
-                    isRegistered = ShellReg.IsAssemblyRegistered(regAssembly);
+                    Type regType = regAssembly.GetType("PDNThumb.ThumbnailHandler", true);
+                    ThumbnailProviderAttribute regAttr = regType.GetCustomAttribute<ThumbnailProviderAttribute>()
+                        ?? throw new InvalidOperationException("Type to register is not a ThumbnailProvider");
+                    string regGuid = regType.GUID.ToString("B");
+
+                    using (RegistryKey rootKey = RegistryUtil.GetBaseKeyByOSBitness(RegistryHive.LocalMachine))
+                    {
+                        if (rootKey != null)
+                        {
+                            using (RegistryKey shellKey = rootKey.OpenSubKey(
+                                "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Shell Extensions\\Approved"
+                            ))
+                            {
+                                if (shellKey != null)
+                                {
+                                    object shellValue = shellKey.GetValue(regGuid);
+                                    if (shellValue == null && shellValue is string shellValueStr)
+                                        isRegistered = shellValueStr == regAttr.Name;
+                                }
+                            }
+                        }
+                    }
                 }
                 catch (Exception e)
                 {
@@ -125,7 +151,7 @@ namespace PDNThumbReg
 
                 try
                 {
-                    if (!ShellReg.UnregisterAssembly(regAssembly))
+                    if (!regSvc.UnregisterAssembly(regAssembly))
                     {
                         if (!silent)
                         {
@@ -169,7 +195,7 @@ namespace PDNThumbReg
 
                 try
                 {
-                    if (!ShellReg.RegisterAssembly(regAssembly, AssemblyRegistrationFlags.SetCodeBase))
+                    if (!regSvc.RegisterAssembly(regAssembly, AssemblyRegistrationFlags.SetCodeBase))
                     {
                         if (!silent)
                         {

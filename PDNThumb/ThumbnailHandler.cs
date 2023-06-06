@@ -22,121 +22,52 @@
  * SOFTWARE.
  */
 
+using Microsoft.WindowsAPICodePack.Shell;
+using Microsoft.WindowsAPICodePack.ShellExtensions;
+using Microsoft.WindowsAPICodePack.Taskbar;
 using PDNThumb.IO;
-using PDNThumb.Properties;
-using SharpShell.Attributes;
-using SharpShell.SharpThumbnailHandler;
 using System;
+using System.ComponentModel;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Xml;
 
 namespace PDNThumb
 {
     [DisplayName("Paint.NET Project File Thumbnail Provider")]
     [Guid("B3FBBDAB-BF71-42B8-9F37-2344CBB9C34B")]
     [ComVisible(true)]
-#pragma warning disable CS0618 // Type or member is obsolete
-    // https://github.com/dwmkerr/sharpshell/issues/283#issuecomment-497484812
-    [COMServerAssociation(AssociationType.FileExtension, ".pdn")]
-#pragma warning restore CS0618 // Type or member is obsolete
-    public class ThumbnailHandler : SharpThumbnailHandler
+    [ClassInterface(ClassInterfaceType.None)]
+    [ThumbnailProvider("Paint.NET Project File Thumbnail Provider", ".pdn")]
+    public class ThumbnailHandler : ThumbnailProvider, IThumbnailFromStream, IThumbnailFromFile,
+        IThumbnailFromShellObject
     {
-        protected override Bitmap GetThumbnailImage(uint width)
-            => (Bitmap) ReadPDNThumbRes(SelectedItemStream, (int) Math.Min(width, int.MaxValue)).Value;
+        private ThumbnailAlphaType alphaType = ThumbnailAlphaType.Unknown;
 
-        public static (bool Success, Image Value) ReadPDNThumbRes(Stream reader, int width)
+        public override ThumbnailAlphaType GetThumbnailAlphaType() => alphaType;
+
+        public Bitmap ConstructBitmap(Stream stream, int sideSize) => ConstructBitmapImpl(stream, sideSize);
+
+        public Bitmap ConstructBitmap(FileInfo info, int sideSize) => ConstructBitmapImpl(info.FullName, sideSize);
+
+        public Bitmap ConstructBitmap(ShellObject shellObject, int sideSize)
+            => ConstructBitmapImpl(shellObject.ParsingName, sideSize);
+
+        private Bitmap ConstructBitmapImpl(string name, int sideSize)
         {
-            (bool success, Image thumb) = ReadPDNThumb(reader);
-            Bitmap resThumb = null;
-            if (success && width < thumb.Width)
+            using (FileStream stream = new FileStream(name, FileMode.Open, FileAccess.Read, FileShare.Read))
             {
-                try
-                {
-                    int resWidth;
-                    int resHeight;
-                    if (width == 1)
-                    {
-                        resWidth = 1;
-                        resHeight = 1;
-                    }
-                    else
-                    {
-                        int scalingFactor = Math.Max(thumb.Width, thumb.Height);
-                        resWidth = width * thumb.Width / scalingFactor;
-                        resHeight = width * thumb.Height / scalingFactor;
-                    }
-
-                    resThumb = new Bitmap(resWidth, resHeight);
-                    using (Graphics resGraphics = Graphics.FromImage(resThumb))
-                    {
-                        resGraphics.Clear(Color.Transparent);
-                        resGraphics.CompositingMode = CompositingMode.SourceOver;
-                        resGraphics.CompositingQuality = CompositingQuality.HighQuality;
-                        resGraphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                        resGraphics.DrawImage(thumb, 0, 0, resWidth, resHeight);
-                    }
-                    return (true, resThumb);
-                }
-#if !DEBUG
-                catch (Exception)
-                {
-                    resThumb?.Dispose();
-                    return (false, Resources.fallback);
-                }
-#endif
-                finally
-                {
-                    thumb.Dispose();
-                }
+                return ConstructBitmapImpl(stream, sideSize);
             }
-            else
-                return (success, thumb);
         }
 
-        public static (bool Success, Image Value) ReadPDNThumb(Stream reader)
+        private Bitmap ConstructBitmapImpl(Stream stream, int sideSize)
         {
-#if !DEBUG
-            try
-            {
-#endif
-            byte[] buffX4 = new byte[4] { 0, 0, 0, 0 };
-
-            // "PDN3"
-            if (reader.Read(buffX4, 0, 4) == -1
-            || buffX4[0] != 'P'
-            || buffX4[1] != 'D'
-            || buffX4[2] != 'N'
-            || buffX4[3] != '3')
-                return (false, Resources.fallback);
-
-            if (reader.Read(buffX4, 0, 3) == -1)
-                return (false, Resources.fallback);
-
-            // "<pdnImage><custom></custom></pdnImage>"
-            int headerSz = buffX4[0] + (buffX4[1] << 8) + (buffX4[2] << 16);
-            if (headerSz < 38)
-                return (false, Resources.fallback);
-
-            using (StreamSubsetWrapper headerReader = new StreamSubsetWrapper(reader, headerSz))
-            {
-                XmlDocument headerXml = new XmlDocument();
-                headerXml.Load(headerReader);
-                string png = headerXml.SelectSingleNode("/pdnImage/custom/thumb")?.Attributes["png"]?.Value;
-                headerXml = null;
-                Image thumb = Image.FromStream(new MemoryStream(Convert.FromBase64String(png)));
-                png = null;
-                return (true, thumb);
-            }
-#if !DEBUG
-            }
-            catch (Exception)
-            {
-                return (false, Resources.fallback);
-            }
-#endif
+            Bitmap thumb = PDNReader.ReadPDN3ThumbRes(stream, sideSize).Value;
+            alphaType = Image.IsAlphaPixelFormat(thumb.PixelFormat)
+                ? ThumbnailAlphaType.HasAlphaChannel
+                : ThumbnailAlphaType.NoAlphaChannel;
+            return thumb;
         }
     }
 }
