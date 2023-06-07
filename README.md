@@ -1,3 +1,11 @@
+# Obsolete
+There is no point of this when Paint.NET has it's own Shell Extension for Thumbnails. However, registering it manually
+can only be done by the registry. See: [How to register PaintDotNet.ShellExtension.x64.dll manually?
+](https://forums.getpaint.net/topic/122627-how-to-register-paintdotnetshellextensionx64dll-manually/)
+
+Using that installer output, I wrote a registry file that works for Paint.NET 5.0.6 (as of now)
+[here](https://gist.github.com/xchellx/a0fc1e837273dc49dd253b5b761c4aff).
+
 # Paint.NET Project File Thumbnail Provider
 Provides thumbnails for Paint.NET project files in Windows Explorer.
 
